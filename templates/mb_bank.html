@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MB BANK | Finance Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #03140b;
+            --surface: #0a2616;
+            --surface2: #0f3821;
+            --green: #00ff88;
+            --green-dim: rgba(0,255,136,0.3);
+            --emerald: #10b981;
+            --gold: #f59e0b;
+            --text: #f0fdf4;
+            --dim: #a7f3d0;
+            --border: rgba(0,255,136,0.3);
+        }
+
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'Inter', sans-serif; min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background: linear-gradient(90deg, rgba(0,255,136,0.05) 1px, transparent 1px), linear-gradient(rgba(0,255,136,0.05) 1px, transparent 1px);
+            background-size: 40px 40px; pointer-events: none; z-index: 0;
+        }
+
+        .header {
+            position: sticky; top: 0; z-index: 100; background: rgba(3,20,11,0.95);
+            border-bottom: 1px solid var(--border); padding: 12px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header-brand { display: flex; align-items: center; gap: 12px; }
+        .header-icon {
+            width: 40px; height: 40px; background: linear-gradient(135deg, var(--emerald), var(--green));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: #000; box-shadow: 0 0 15px rgba(0,255,136,0.4);
+        }
+        .header-info .t1 { font-size: 14px; font-weight: 700; color: var(--green); letter-spacing: 1px; text-transform: uppercase; }
+        .header-info .t2 { font-size: 10px; color: var(--dim); font-family: 'JetBrains Mono', monospace; }
+
+        .back-link {
+            color: var(--text); background: rgba(0,255,136,0.1); border: 1px solid var(--green);
+            padding: 8px 14px; font-size: 12px; font-weight: 600; border-radius: 6px;
+            text-decoration: none; display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; transition: 0.2s;
+        }
+        .back-link:hover { background: var(--green); color: #000; }
+
+        .container { position: relative; z-index: 1; max-width: 900px; margin: 30px auto; padding: 0 16px; }
+
+        .page-intro { text-align: center; margin-bottom: 30px; }
+        .page-intro-icon {
+            display: inline-flex; width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(0,255,136,0.15); align-items: center; justify-content: center;
+            color: var(--green); font-size: 26px; margin-bottom: 16px; border: 1px solid var(--border);
+            box-shadow: 0 0 25px rgba(0,255,136,0.2);
+        }
+        .page-intro h1 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .page-intro p { font-size: 13px; color: var(--dim); max-width: 500px; margin: 0 auto; line-height: 1.5; }
+
+        .finance-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+            padding: 24px; position: relative; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+        .finance-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--emerald), var(--green)); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .field.full { grid-column: span 2; }
+        .field { display: flex; flex-direction: column; gap: 8px; }
+
+        .field label { font-size: 11px; font-weight: 600; color: var(--dim); font-family: 'JetBrains Mono', monospace; letter-spacing: 1px; }
+
+        .input-wrap { position: relative; display: flex; align-items: center; }
+        .input-icon { position: absolute; left: 16px; color: var(--green); font-size: 14px; }
+        .field input, .field select {
+            width: 100%; background: #03140b; border: 1px solid var(--border); border-radius: 8px;
+            padding: 14px 16px 14px 44px; color: #fff; font-family: 'JetBrains Mono', monospace;
+            font-size: 16px; font-weight: 600; outline: none; transition: 0.2s;
+        }
+        .field select { appearance: none; padding-right: 44px; }
+        .select-arrow { position: absolute; right: 16px; color: var(--green); pointer-events: none; font-size: 12px; }
+        
+        .field input:focus, .field select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,255,136,0.15); }
+        .field select option { background: var(--surface2); color: #fff; }
+
+        .generate-btn {
+            width: 100%; padding: 18px; background: linear-gradient(135deg, var(--emerald), var(--green));
+            border: none; border-radius: 8px; color: #000; font-family: 'JetBrains Mono', monospace;
+            font-size: 15px; font-weight: 700; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(0,255,136,0.3); text-transform: uppercase;
+        }
+        .generate-btn:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0,255,136,0.4); }
+        .generate-btn:disabled { background: #0a2616; color: #225533; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        .status-msg { margin-top: 20px; font-size: 13px; font-family: 'JetBrains Mono', monospace; text-align: center; font-weight: 600; }
+        .status-msg.success { color: var(--green); }
+        .status-msg.error { color: #ff3366; }
+        .status-msg.loading { color: var(--gold); }
+
+        .preview-panel {
+            display: none; margin-top: 30px; text-align: center;
+            background: var(--surface); border: 1px dashed var(--border); border-radius: 12px;
+            padding: 30px 16px; position: relative;
+        }
+        .preview-panel.show { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .preview-title {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--bg); padding: 4px 16px; color: var(--green); font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; font-weight: 600; letter-spacing: 1px; border: 1px solid var(--border);
+            border-radius: 20px; display: flex; align-items: center; gap: 8px;
+        }
+
+        .receipt-wrapper { display: inline-block; max-width: 400px; width: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.6); margin-bottom: 20px; }
+        .receipt-wrapper img { width: 100%; display: block; }
+
+        .dl-btn {
+            display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; width: 100%; max-width: 400px; justify-content: center;
+            background: rgba(0,255,136,0.1); border: 1px solid var(--green); border-radius: 8px;
+            color: var(--green); text-decoration: none; font-size: 14px; font-weight: 700; font-family: 'JetBrains Mono', monospace; transition: 0.2s;
+        }
+        .dl-btn:hover { background: var(--green); color: #000; }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; gap: 12px; }
+            .field.full { grid-column: span 1; }
+            .header-text .t2 { display: none; }
+            .finance-card { padding: 20px 16px; }
+            .generate-btn { font-size: 14px; padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-brand">
+            <div class="header-icon"><i class="fas fa-university"></i></div>
+            <div class="header-info">
+                <div class="t1">MB Bank Bill</div>
+                <div class="t2">SECURE PAYMENT INJECTION</div>
+            </div>
+        </div>
+        <a href="/" class="back-link"><i class="fas fa-chevron-left"></i> Return</a>
+    </header>
+
+    <div class="container">
+        <div class="page-intro">
+            <div class="page-intro-icon"><i class="fas fa-money-bill-transfer"></i></div>
+            <h1>Giao Dịch MB Bank</h1>
+            <p>Render biên lai MB Bank nhanh chóng với 21 giao diện app mới nhất.</p>
+        </div>
+
+        <div class="finance-card">
+            <form id="mb-form">
+                <div class="form-grid">
+                    <div class="field full">
+                        <label>SỐ TIỀN CHUYỂN (VNĐ)</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-dong-sign input-icon"></i>
+                            <input type="number" id="money" value="100000" placeholder="500000" required>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>THỜI GIAN TRÊN ĐIỆN THOẠI</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-clock input-icon"></i>
+                            <input type="text" id="time" value="12:00" placeholder="HH:MM" required>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>MỨC PIN (%)</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-battery-three-quarters input-icon"></i>
+                            <select id="pin">
+                                <option value="100">100%</option>
+                                <option value="80">80%</option>
+                                <option value="60" selected>60%</option>
+                                <option value="40">40%</option>
+                                <option value="35">35%</option>
+                                <option value="22">22%</option>
+                                <option value="10">10%</option>
+                            </select>
+                            <i class="fas fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+
+                    <div class="field full">
+                        <label>NỀN GIAO DIỆN APP (THEME)</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-palette input-icon"></i>
+                            <select id="bg_id">
+                                {% for key, name in nen_names.items() %}
+                                <option value="{{ key }}">{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                            <i class="fas fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="generate-btn" id="generate-btn"><i class="fas fa-bolt"></i> RENDER BIÊN LAI</button>
+                <div class="status-msg" id="status-msg"></div>
+            </form>
+        </div>
+
+        <div class="preview-panel" id="preview-panel">
+            <div class="preview-title"><i class="fas fa-check-circle"></i> THÀNH CÔNG</div>
+            <div class="receipt-wrapper"><img id="img-result" src="" alt="Biên lai MB Bank"></div>
+            <br>
+            <a id="dl-btn" class="dl-btn" download="mb_receipt.png"><i class="fas fa-download"></i> TẢI HÌNH ẢNH BIÊN LAI</a>
+        </div>
+    </div>
+
+    <script>
+        const now = new Date();
+        document.getElementById('time').value = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+        document.getElementById('mb-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('generate-btn');
+            const statusLabel = document.getElementById('status-msg');
+            const previewArea = document.getElementById('preview-panel');
+
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG RENDER...';
+            statusLabel.className = 'status-msg loading'; statusLabel.textContent = "Đang tổng hợp dữ liệu...";
+            previewArea.classList.remove('show');
+
+            const payload = {
+                money: document.getElementById('money').value,
+                time: document.getElementById('time').value,
+                pin: document.getElementById('pin').value,
+                bg_id: document.getElementById('bg_id').value
+            };
+
+            try {
+                const res = await fetch('/api/mb/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (data.success) {
+                    statusLabel.className = 'status-msg success'; statusLabel.textContent = "✔ Biên lai tạo thành công!";
+                    document.getElementById('img-result').src = data.image; document.getElementById('dl-btn').href = data.image;
+                    previewArea.classList.add('show');
+                } else {
+                    statusLabel.className = 'status-msg error'; statusLabel.textContent = "✖ Lỗi: " + data.message;
+                }
+            } catch (err) {
+                statusLabel.className = 'status-msg error'; statusLabel.textContent = "✖ Lỗi kết nối: " + err;
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-bolt"></i> RENDER BIÊN LAI';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CCCD GENERATOR | ID Forge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0b1120;
+            --surface: #172033;
+            --surface2: #1e293b;
+            --blue: #3b82f6;
+            --blue-light: #60a5fa;
+            --gold: #fbbf24;
+            --gold-dim: rgba(251,191,36,0.3);
+            --text: #f8fafc;
+            --dim: #94a3b8;
+            --green: #22c55e;
+            --border: #334155;
+        }
+
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'Inter', sans-serif; min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image: linear-gradient(rgba(96,165,250,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(96,165,250,0.05) 1px, transparent 1px);
+            background-size: 30px 30px; pointer-events: none; z-index: 0;
+        }
+
+        .header {
+            position: sticky; top: 0; z-index: 100; background: rgba(11,17,32,0.95);
+            border-bottom: 1px solid var(--border); padding: 12px 20px;
+            display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(8px);
+        }
+        .header-brand { display: flex; align-items: center; gap: 12px; }
+        .header-coa {
+            width: 40px; height: 40px; border: 2px solid var(--gold); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--gold);
+            background: rgba(251,191,36,0.1); box-shadow: 0 0 10px var(--gold-dim);
+        }
+        .header-info .t1 { font-size: 14px; font-weight: 700; color: var(--blue-light); letter-spacing: 0.5px; }
+        .header-info .t2 { font-size: 10px; color: var(--dim); font-family: 'JetBrains Mono', monospace; }
+
+        .back-link {
+            color: var(--text); padding: 8px 14px; font-size: 12px; font-weight: 600;
+            border: 1px solid var(--border); border-radius: 6px; text-decoration: none;
+            display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; transition: 0.2s;
+        }
+        .back-link:hover { background: var(--surface2); color: var(--blue-light); border-color: var(--blue-light); }
+
+        .container { position: relative; z-index: 1; max-width: 900px; margin: 30px auto; padding: 0 16px; }
+
+        .page-intro {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 20px;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px; border-left: 4px solid var(--gold);
+        }
+        .page-intro-icon { font-size: 28px; color: var(--gold); }
+        .page-intro-text h1 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .page-intro-text p { font-size: 13px; color: var(--dim); line-height: 1.5; }
+
+        .form-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+        .panel-head {
+            background: rgba(59,130,246,0.1); border-bottom: 1px solid var(--border);
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; font-weight: 600; color: var(--blue-light); letter-spacing: 1px;
+        }
+        .panel-body { padding: 20px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-grid.full { grid-template-columns: 1fr; }
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field.full { grid-column: span 2; }
+
+        .field label { font-size: 12px; font-weight: 600; color: var(--dim); display: flex; justify-content: space-between; }
+        .field input, .field select {
+            background: #0b1120; border: 1px solid var(--border); border-radius: 8px;
+            padding: 12px 14px; color: #fff; font-size: 15px; font-weight: 500; outline: none; transition: 0.2s;
+        }
+        .field input:focus, .field select:focus { border-color: var(--blue-light); box-shadow: 0 0 0 3px rgba(96,165,250,0.15); }
+        .field select option { background: var(--surface); }
+
+        .upload-zone {
+            border: 2px dashed var(--border); border-radius: 8px; padding: 20px; text-align: center;
+            cursor: pointer; transition: 0.2s; background: #0b1120; position: relative;
+        }
+        .upload-zone:hover { border-color: var(--blue-light); background: rgba(59,130,246,0.05); }
+        .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .upload-icon { font-size: 24px; color: var(--blue-light); margin-bottom: 8px; }
+        .upload-text { font-size: 13px; color: var(--dim); }
+        .upload-name { font-size: 12px; color: var(--green); margin-top: 8px; font-weight: 600; }
+
+        .divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+        .divider span { font-size: 11px; color: var(--dim); font-weight: 600; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .generate-btn {
+            width: 100%; padding: 16px; background: var(--blue); border: none; border-radius: 8px;
+            color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(59,130,246,0.2);
+        }
+        .generate-btn:hover { background: var(--blue-light); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59,130,246,0.3); }
+        .generate-btn:disabled { background: var(--surface2); color: var(--dim); cursor: not-allowed; box-shadow: none; transform: none; }
+
+        .status-msg { margin-top: 16px; font-size: 13px; font-weight: 600; text-align: center; }
+        .status-msg.success { color: var(--green); }
+        .status-msg.error { color: #f87171; }
+        .status-msg.loading { color: var(--blue-light); }
+
+        .preview-panel { display: none; background: var(--surface); border: 1px solid var(--gold); border-radius: 12px; overflow: hidden; margin-top: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .preview-panel.show { display: block; animation: fadeUp 0.4s ease; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .preview-head { background: rgba(251,191,36,0.1); border-bottom: 1px solid rgba(251,191,36,0.2); padding: 12px 20px; font-size: 13px; font-weight: 600; color: var(--gold); display: flex; align-items: center; gap: 8px; }
+        .preview-body { padding: 20px; }
+        
+        .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .preview-card { text-align: center; }
+        .preview-label { font-size: 12px; font-weight: 600; color: var(--dim); margin-bottom: 12px; }
+        .preview-card img { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(0,0,0,0.3); margin-bottom: 16px; }
+        
+        .dl-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px;
+            background: rgba(251,191,36,0.1); border: 1px solid var(--gold); border-radius: 6px;
+            color: var(--gold); text-decoration: none; font-size: 13px; font-weight: 600; transition: 0.2s; width: 100%;
+        }
+        .dl-btn:hover { background: var(--gold); color: #000; }
+
+        @media (max-width: 600px) {
+            .header-text .sub { display: none; }
+            .form-grid { grid-template-columns: 1fr; gap: 12px; }
+            .field.full { grid-column: span 1; }
+            .page-intro { flex-direction: column; text-align: center; align-items: center; padding: 20px 16px; gap: 12px; }
+            .preview-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-brand">
+            <div class="header-coa"><i class="fas fa-id-card"></i></div>
+            <div class="header-info">
+                <div class="t1">CCCD Generator</div>
+                <div class="t2">ID DOCUMENT FORGE SYSTEM</div>
+            </div>
+        </div>
+        <a href="/" class="back-link"><i class="fas fa-chevron-left"></i> Return</a>
+    </header>
+
+    <div class="container">
+        <div class="page-intro">
+            <div class="page-intro-icon"><i class="fas fa-id-badge"></i></div>
+            <div class="page-intro-text">
+                <h1>Tạo Căn Cước Công Dân</h1>
+                <p>Hệ thống tự động tạo phôi CCCD 2 mặt chuẩn mực, bao gồm tạo mã QR và mã MRZ ICAO.</p>
+            </div>
+        </div>
+
+        <form id="cccd-form">
+            <div class="form-panel">
+                <div class="panel-head"><i class="fas fa-user-shield"></i> THÔNG TIN CÁ NHÂN</div>
+                <div class="panel-body">
+                    <div class="form-grid">
+                        <div class="field full">
+                            <label>Số CCCD</label>
+                            <input type="text" id="so_cccd" value="001099012345" required>
+                        </div>
+                        <div class="field full">
+                            <label>Họ và tên <span style="font-size:10px;font-weight:400;">(IN HOA)</span></label>
+                            <input type="text" id="name" value="NGUYỄN VĂN A" style="text-transform:uppercase;" required>
+                        </div>
+                        <div class="field">
+                            <label>Ngày sinh</label>
+                            <input type="text" id="ngay_sinh" value="01/01/1999" placeholder="DD/MM/YYYY" required>
+                        </div>
+                        <div class="field">
+                            <label>Giới tính</label>
+                            <select id="sex">
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Quốc tịch</label>
+                            <input type="text" id="nation" value="Việt Nam" required>
+                        </div>
+                        <div class="field">
+                            <label>Ngày cấp</label>
+                            <input type="text" id="ngay_cap" value="01/01/2021" placeholder="DD/MM/YYYY" required>
+                        </div>
+                        <div class="field">
+                            <label>Thường trú (Xã, Huyện)</label>
+                            <input type="text" id="thuong_tru_1" value="Xã ABC, Huyện XYZ" required>
+                        </div>
+                        <div class="field">
+                            <label>Thường trú (Tỉnh, TP)</label>
+                            <input type="text" id="thuong_tru_2" value="Tỉnh Hà Nội" required>
+                        </div>
+                        <div class="field full">
+                            <label>Ngày hết hạn</label>
+                            <input type="text" id="ngay_het_han" value="01/01/2040" placeholder="DD/MM/YYYY" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-panel">
+                <div class="panel-head"><i class="fas fa-camera"></i> ẢNH THẺ NHẬN DIỆN</div>
+                <div class="panel-body">
+                    <div class="upload-zone" onclick="document.getElementById('anh_the_file').click()">
+                        <input type="file" id="anh_the_file" accept="image/*" style="display:none;" onchange="onFileSelect(this)">
+                        <div class="upload-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+                        <div class="upload-text">Nhấp để tải lên ảnh mặt (ưu tiên 3x4 nét)</div>
+                        <div class="upload-name" id="file-name"></div>
+                    </div>
+                    <div class="divider"><span>HOẶC</span></div>
+                    <div class="field full">
+                        <label>Dán URL ảnh trực tiếp</label>
+                        <input type="url" id="anh_the_url" placeholder="https://example.com/photo.jpg">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="generate-btn" id="generate-btn">
+                <i class="fas fa-id-card"></i> KÍCH HOẠT TẠO CCCD
+            </button>
+            <div class="status-msg" id="status-msg"></div>
+        </form>
+
+        <div class="preview-panel" id="preview-panel">
+            <div class="preview-head"><i class="fas fa-check-circle"></i> KẾT QUẢ RENDER</div>
+            <div class="preview-body">
+                <div class="preview-grid">
+                    <div class="preview-card">
+                        <div class="preview-label">MẶT TRƯỚC</div>
+                        <img id="img-front" src="" alt="Mặt trước">
+                        <a id="dl-front" class="dl-btn" download="cccd_front.png"><i class="fas fa-download"></i> LƯU MẶT TRƯỚC</a>
+                    </div>
+                    <div class="preview-card">
+                        <div class="preview-label">MẶT SAU & MRZ</div>
+                        <img id="img-back" src="" alt="Mặt sau">
+                        <a id="dl-back" class="dl-btn" download="cccd_back.png"><i class="fas fa-download"></i> LƯU MẶT SAU</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let base64Avatar = '';
+
+        function onFileSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+            document.getElementById('file-name').textContent = '✔ Đã chọn: ' + file.name;
+            const reader = new FileReader();
+            reader.onload = e => { base64Avatar = e.target.result; document.getElementById('anh_the_url').value = ''; };
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById('cccd-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('generate-btn');
+            const status = document.getElementById('status-msg');
+            const preview = document.getElementById('preview-panel');
+
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ĐANG RENDER...';
+            status.className = 'status-msg loading'; status.textContent = 'Trích xuất hình ảnh và biên dịch MRZ...';
+            preview.classList.remove('show');
+
+            const payload = {
+                so_cccd: document.getElementById('so_cccd').value,
+                name: document.getElementById('name').value,
+                ngay_sinh: document.getElementById('ngay_sinh').value,
+                sex: document.getElementById('sex').value,
+                nation: document.getElementById('nation').value,
+                thuong_tru_1: document.getElementById('thuong_tru_1').value,
+                thuong_tru_2: document.getElementById('thuong_tru_2').value,
+                ngay_cap: document.getElementById('ngay_cap').value,
+                ngay_het_han: document.getElementById('ngay_het_han').value,
+                anh_the: base64Avatar || document.getElementById('anh_the_url').value
+            };
+
+            try {
+                const res = await fetch('/api/cccd/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (data.success) {
+                    status.className = 'status-msg success'; status.textContent = '✔ Hoàn tất render thẻ!';
+                    document.getElementById('img-front').src = data.front; document.getElementById('dl-front').href = data.front;
+                    document.getElementById('img-back').src = data.back; document.getElementById('dl-back').href = data.back;
+                    preview.classList.add('show');
+                } else {
+                    status.className = 'status-msg error'; status.textContent = '✖ Lỗi: ' + data.message;
+                }
+            } catch (err) {
+                status.className = 'status-msg error'; status.textContent = '✖ Lỗi mạng: ' + err;
+            } finally {
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-id-card"></i> KÍCH HOẠT TẠO CCCD';
+            }
+        });
+    </script>
+</body>
+</html>

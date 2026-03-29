@@ -1,0 +1,7 @@
+=== Server started at 2026-03-29 09:22:04 ===
+[2026-03-29 09:22:04] INFO app — === App started ===
+[2026-03-29 09:22:04] INFO app — === App started ===
+[2026-03-29 09:22:04] WARNING werkzeug —  * Debugger is active!
+[2026-03-29 09:22:04] WARNING werkzeug —  * Debugger is active!
+[2026-03-29 09:22:04] INFO werkzeug —  * Debugger PIN: 944-736-415
+[2026-03-29 09:22:04] INFO werkzeug —  * Debugger PIN: 944-736-415

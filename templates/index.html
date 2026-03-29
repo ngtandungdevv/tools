@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AUTO SYSTEM | Tools Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Sáng hơn, rõ ràng hơn */
+            --bg: #090b10;
+            --surface: #131722;
+            --surface2: #1e2433;
+            --border: rgba(255,255,255,0.12);
+            --border-hover: rgba(255,255,255,0.25);
+            --red: #ff3366;
+            --cyan: #00e5ff;
+            --green: #00f260;
+            --purple: #9d4edd;
+            --text: #ffffff;
+            --text-dim: #a0aec0;
+            --text-muted: #718096;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        input, textarea {
+            user-select: auto;
+            -webkit-user-select: auto;
+        }
+
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none; z-index: 0;
+        }
+
+        .navbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(9, 11, 16, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px; height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .nav-brand { display: flex; align-items: center; gap: 12px; }
+        .nav-logo {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--red), var(--purple));
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 900; color: #fff; font-family: 'JetBrains Mono', monospace;
+        }
+        .nav-title { font-size: 16px; font-weight: 700; color: #fff; }
+        .nav-subtitle { font-size: 11px; color: var(--cyan); font-family: 'JetBrains Mono', monospace; }
+
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .badge {
+            background: var(--surface2); border: 1px solid var(--border);
+            padding: 6px 12px; border-radius: 6px; font-size: 12px;
+            font-family: 'JetBrains Mono', monospace; color: var(--cyan);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .badge-dot {
+            width: 8px; height: 8px; background: var(--green);
+            border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: blink 2s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        .btn-admin {
+            background: rgba(255,51,102,0.1); border: 1px solid var(--red); color: #fff;
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600;
+            text-decoration: none; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-admin:hover { background: var(--red); }
+
+        .social-wrap {
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 12px 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
+        }
+        .social-pill {
+            display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+            background: var(--surface2); border: 1px solid var(--border); border-radius: 32px;
+            color: #fff; text-decoration: none; font-size: 13px; font-weight: 500; transition: 0.2s;
+        }
+        .social-pill:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,229,255,0.1); transform: translateY(-2px); }
+
+        .hero { position: relative; z-index: 1; text-align: center; padding: 60px 20px 40px; }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 8px; background: rgba(0,242,96,0.1);
+            border: 1px solid var(--green); color: var(--green); font-size: 12px; font-weight: 600;
+            padding: 8px 16px; border-radius: 32px; margin-bottom: 24px;
+        }
+        .hero h1 { font-size: clamp(32px, 8vw, 64px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; color: #fff; }
+        .hero h1 span { background: linear-gradient(135deg, var(--red), var(--purple)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+        .hero-desc { font-size: 16px; color: var(--text-dim); max-width: 500px; margin: 0 auto 32px; line-height: 1.6; }
+
+        .stats-bar { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+        .stat { text-align: center; background: var(--surface); padding: 12px 24px; border-radius: 12px; border: 1px solid var(--border); min-width: 120px; }
+        .stat-num { font-size: 24px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: #fff; }
+        .stat-label { font-size: 12px; color: var(--text-dim); font-weight: 500; margin-top: 4px; }
+
+        .section { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 0 20px 80px; }
+        .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .section-label { font-size: 14px; font-weight: 600; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; }
+        .section-line { flex: 1; height: 1px; background: var(--border); }
+
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .tool-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+            padding: 24px; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 16px;
+            transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .tool-card:hover { transform: translateY(-4px); border-color: var(--cyan); box-shadow: 0 10px 30px rgba(0,229,255,0.15); }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .tool-icon-wrap {
+            width: 56px; height: 56px; border-radius: 12px; background: var(--surface2);
+            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+            font-size: 28px; transition: 0.3s; color: #fff;
+        }
+        .tool-card:hover .tool-icon-wrap { background: var(--cyan); border-color: var(--cyan); color: #000; }
+        .card-status { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--green); }
+        
+        .tool-name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .tool-desc { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
+
+        /* Music */
+        .music-player {
+            position: fixed; bottom: 20px; left: 20px; right: auto; width: 300px;
+            background: rgba(19, 23, 34, 0.95); border: 1px solid var(--border); border-radius: 16px;
+            padding: 16px; z-index: 1000; backdrop-filter: blur(12px); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+        .music-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .music-label { font-size: 12px; font-weight: 600; color: var(--cyan); display: flex; align-items: center; gap: 6px; }
+        .music-title { font-size: 14px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 12px; }
+        
+        .music-progress { width: 100%; height: 4px; background: var(--surface2); border-radius: 4px; margin-bottom: 12px; position: relative; }
+        .music-progress-bar { height: 100%; background: var(--cyan); border-radius: 4px; width: 0%; transition: width 0.1s linear; }
+        
+        .music-controls { display: flex; justify-content: center; gap: 16px; margin-bottom: 12px; }
+        .music-btn { width: 36px; height: 36px; background: var(--surface2); border: none; color: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .music-btn.play-btn { background: var(--cyan); color: #000; width: 44px; height: 44px; border-radius: 12px; font-size: 16px; }
+
+        footer { text-align: center; padding: 24px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-dim); font-weight: 500; }
+
+        /* RESPONSIVE MOBILE */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 16px; height: 60px; }
+            .nav-logo { width: 32px; height: 32px; font-size: 14px; }
+            .nav-title { display: none; }
+            .badge { font-size: 11px; padding: 4px 8px; }
+            .btn-admin { padding: 6px 12px; font-size: 12px; }
+            
+            .hero { padding: 40px 16px 30px; }
+            .stats-bar { gap: 12px; }
+            .stat { flex: 1; min-width: 100px; padding: 12px; }
+            
+            .section { padding: 0 16px 100px; }
+            .tools-grid { grid-template-columns: 1fr; gap: 16px; }
+            .tool-card { padding: 20px; }
+            
+            .music-player {
+                width: calc(100% - 32px);
+                bottom: 16px; right: 16px; left: 16px;
+            }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo">AS</div>
+            <div>
+                <div class="nav-title">AUTO SYSTEM</div>
+                <div class="nav-subtitle">DASHBOARD v2.0</div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="badge"><div class="badge-dot"></div> {{ visitor_ip }}</div>
+            <a href="/admin" class="btn-admin"><i class="fas fa-terminal"></i> Admin</a>
+        </div>
+    </nav>
+
+    {% if social_links %}
+    <div class="social-wrap">
+        {% for platform, url, icon, name in social_links %}
+        <a href="{{ url }}" target="_blank" class="social-pill"><i class="{{ icon }}"></i> {{ name }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="hero">
+        <div class="hero-tag"><i class="fas fa-shield-check"></i> ALL SYSTEMS ONLINE</div>
+        <h1>Premium<br><span>Auto Tools</span></h1>
+        <p class="hero-desc">Bộ công cụ tự động hóa mạnh mẽ — được thiết kế tối ưu hiển thị rõ ràng trên mọi thiết bị.</p>
+        <div class="stats-bar">
+            <div class="stat"><div class="stat-num">{{ tools|length }}</div><div class="stat-label">Tools Online</div></div>
+            <div class="stat"><div class="stat-num" style="color:var(--green);">LIVE</div><div class="stat-label">System Status</div></div>
+            <div class="stat"><div class="stat-num" id="clock">--:--</div><div class="stat-label">Local Time</div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <div class="section-label"><i class="fas fa-layer-group"></i> AVAILABLE TOOLS</div>
+            <div class="section-line"></div>
+        </div>
+        <div class="tools-grid">
+            {% if tools %}
+            {% for key, tool in tools.items() %}
+            <a href="/{{ key }}" class="tool-card">
+                <div class="card-top">
+                    <div class="tool-icon-wrap">{{ tool.icon }}</div>
+                    <div class="card-status"><div class="status-dot"></div>ACTIVE</div>
+                </div>
+                <div>
+                    <div class="tool-name">{{ tool.name }}</div>
+                    <div class="tool-desc">{{ tool.desc }}</div>
+                </div>
+            </a>
+            {% endfor %}
+            {% else %}
+            <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);border:1px dashed var(--border);border-radius:12px;">No tools available</div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if playlist %}
+    <div class="music-player">
+        <div class="music-header">
+            <div class="music-label"><i class="fas fa-music"></i> ĐANG PHÁT</div>
+            <button class="music-btn" onclick="toggleMute()" style="width:auto;height:auto;background:none;color:var(--text-dim);"><i class="fas fa-volume-up" id="muteIcon"></i></button>
+        </div>
+        <div class="music-title" id="trackTitle">Đang tải...</div>
+        <div class="music-progress"><div class="music-progress-bar" id="progressBar"></div></div>
+        <div class="music-controls">
+            <button class="music-btn" onclick="prevTrack()"><i class="fas fa-backward-step"></i></button>
+            <button class="music-btn play-btn" onclick="togglePlay()" id="playBtn"><i class="fas fa-play"></i></button>
+            <button class="music-btn" onclick="nextTrack()"><i class="fas fa-forward-step"></i></button>
+        </div>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+    <script id="playlist-data" type="application/json">{{ playlist | tojson | safe }}</script>
+    <script>
+        const rawPlaylist = JSON.parse(document.getElementById('playlist-data').textContent || '[]');
+        const tracks = rawPlaylist.map(t => ({ title: t[0], url: t[2] }));
+        let cur = 0, playing = false, audio = document.getElementById('audioPlayer');
+
+        function load(i) {
+            cur = i; audio.src = tracks[i].url;
+            document.getElementById('trackTitle').textContent = tracks[i].title; play();
+        }
+        function play() {
+            audio.play().then(() => { playing = true; document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>'; }).catch(()=>{});
+        }
+        function togglePlay() {
+            if(playing) { audio.pause(); playing=false; document.getElementById('playBtn').innerHTML='<i class="fas fa-play"></i>'; }
+            else play();
+        }
+        function nextTrack() { load((cur + 1) % tracks.length); }
+        function prevTrack() { load((cur - 1 + tracks.length) % tracks.length); }
+        function toggleMute() {
+            audio.muted = !audio.muted;
+            document.getElementById('muteIcon').className = audio.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+        }
+
+        audio.addEventListener('ended', nextTrack);
+        audio.addEventListener('timeupdate', () => {
+            if(audio.duration) document.getElementById('progressBar').style.width = ((audio.currentTime/audio.duration)*100)+'%';
+        });
+
+        window.addEventListener('load', () => { if(tracks.length > 0) load(0); });
+    </script>
+    {% endif %}
+
+    <footer>
+        &copy; 2024 AUTO SYSTEM | DESIGNED FOR CLARITY AND PERFORMANCE
+    </footer>
+
+    <!-- =========================================================
+         DISCORD FRIENDS SECTION
+    ========================================================== -->
+    <section style="position:relative;z-index:1;padding:60px 20px;max-width:1200px;margin:0 auto;" id="friends-section">
+        <div style="text-align:center;margin-bottom:40px;">
+            <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(88,101,242,0.1);border:1px solid rgba(88,101,242,0.4);color:#7289da;font-size:12px;font-weight:700;padding:8px 18px;border-radius:32px;margin-bottom:18px;letter-spacing:1px;">
+                <i class="fab fa-discord"></i> DISCORD FRIENDS
+            </div>
+            <h2 style="font-size:28px;font-weight:800;color:#fff;margin-bottom:8px;">Bạn Bè Của Admin</h2>
+            <p style="color:var(--text-dim);font-size:14px;">Những người bạn cùng chiến đấu 😤</p>
+        </div>
+        <div id="friends-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;"></div>
+    </section>
+
+    <!-- =========================================================
+         LIVE CHAT BUBBLE
+    ========================================================== -->
+    <div id="chat-fab" onclick="toggleChatPopup()" style="position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;background:linear-gradient(135deg,#5865f2,#00e5ff);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(88,101,242,0.5);transition:0.3s;">
+        <i id="chat-fab-icon" class="fas fa-comment-dots" style="font-size:22px;color:#fff;"></i>
+        <div id="chat-fab-badge" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--red);border-radius:50%;font-size:10px;font-weight:700;color:#fff;display:none;align-items:center;justify-content:center;">!</div>
+    </div>
+
+    <!-- Chat Popup -->
+    <div id="chat-popup" style="position:fixed;bottom:100px;right:28px;z-index:9998;width:340px;max-width:calc(100vw - 30px);background:#131722;border:1px solid #2a2f45;border-radius:18px;box-shadow:0 16px 48px rgba(0,0,0,0.6);display:none;flex-direction:column;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#5865f2,#4752c4);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;">🤖</div>
+                <div>
+                    <div style="font-weight:700;font-size:14px;color:#fff;">Tan Dung Support</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.7);"><span style="color:#57f287;">●</span> Đang online</div>
+                </div>
+            </div>
+            <button onclick="toggleChatPopup()" style="background:transparent;border:none;color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;padding:4px;"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="chat-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:220px;max-height:320px;">
+            <div style="text-align:center;padding:20px 0;">
+                <div style="font-size:28px;margin-bottom:8px;">👋</div>
+                <div style="font-size:13px;color:#8b949e;">Xin chào! Tôi có thể giúp gì bạn?</div>
+            </div>
+        </div>
+        <div style="padding:12px;border-top:1px solid #2a2f45;display:flex;gap:8px;background:#0f111a;">
+            <input id="chat-input" type="text" placeholder="Nhắn tin cho admin..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMsg();}" style="flex:1;background:#0a0c14;border:1px solid #2a2f45;border-radius:20px;padding:10px 16px;color:#fff;font-size:13px;outline:none;">
+            <button onclick="sendChatMsg()" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#5865f2,#00e5ff);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-paper-plane" style="font-size:13px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const n = new Date();
+            document.getElementById('clock').textContent = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        // =============================================
+        // CHAT BUBBLE LOGIC
+        // =============================================
+        let chatOpen = false;
+        let chatSessionId = localStorage.getItem('chat_session_id');
+        if (!chatSessionId) {
+            chatSessionId = 'sess_' + Math.random().toString(36).substr(2, 12);
+            localStorage.setItem('chat_session_id', chatSessionId);
+        }
+        let lastMsgCount = 0;
+
+        function toggleChatPopup() {
+            chatOpen = !chatOpen;
+            const popup = document.getElementById('chat-popup');
+            popup.style.display = chatOpen ? 'flex' : 'none';
+            document.getElementById('chat-fab-icon').className = chatOpen ? 'fas fa-times' : 'fas fa-comment-dots';
+            if (chatOpen) {
+                document.getElementById('chat-fab-badge').style.display = 'none';
+                syncMessages();
+                document.getElementById('chat-input').focus();
+            }
+        }
+
+        function addMessage(text, sender) {
+            const box = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.style.cssText = `
+                max-width: 90%; padding: 10px 14px; border-radius: 14px; font-size: 13px;
+                line-height: 1.5; word-break: break-word; animation: fadeIn 0.2s ease;
+                ${sender === 'admin'
+                    ? 'background: linear-gradient(135deg,#5865f2,#4752c4); color: #fff; align-self: flex-start; border-bottom-left-radius: 4px;'
+                    : 'background: #1e2132; color: #e0e0e0; align-self: flex-end; border-bottom-right-radius: 4px; margin-left: auto;'
+                }
+            `;
+            div.textContent = text;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function sendChatMsg() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+            input.value = '';
+            addMessage(msg, 'user');
+
+            try {
+                await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: chatSessionId, message: msg })
+                });
+            } catch(e) {}
+        }
+
+        async function syncMessages() {
+            try {
+                const res = await fetch(`/api/chat/sync?session_id=${encodeURIComponent(chatSessionId)}&since=0`);
+                const data = await res.json();
+                if (data.success && data.messages.length !== lastMsgCount) {
+                    const box = document.getElementById('chat-messages');
+                    box.innerHTML = '';
+                    if (data.messages.length === 0) {
+                        box.innerHTML = '<div style="text-align:center;padding:20px 0;"><div style="font-size:28px;margin-bottom:8px;">👋</div><div style="font-size:13px;color:#8b949e;">Xin chào! Tôi có thể giúp gì bạn?</div></div>';
+                    } else {
+                        data.messages.forEach(m => addMessage(m.message, m.sender));
+                    }
+                    lastMsgCount = data.messages.length;
+                    if (!chatOpen && data.messages.some(m => m.sender === 'admin')) {
+                        document.getElementById('chat-fab-badge').style.display = 'flex';
+                    }
+                }
+            } catch(e) {}
+        }
+
+        setInterval(syncMessages, 3000);
+
+        // =============================================
+        // DISCORD FRIENDS GRID
+        // =============================================
+        async function loadFriends() {
+            try {
+                const res = await fetch('/api/friends');
+                const data = await res.json();
+                const grid = document.getElementById('friends-grid');
+                const section = document.getElementById('friends-section');
+                if (!data.success || data.friends.length === 0) {
+                    section.style.display = 'none';
+                    return;
+                }
+                grid.innerHTML = '';
+                data.friends.forEach(f => {
+                    const discrimPart = (f.discriminator && f.discriminator !== '0') ? `<span style="color:#5865f2;">#${f.discriminator}</span>` : `<span style="color:#5865f2; font-size:11px;">NEW</span>`;
+                    grid.innerHTML += `
+                        <div style="background:#131722;border:1px solid #2a2f45;border-radius:16px;overflow:hidden;transition:0.3s;cursor:default;position:relative;"
+                             onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 40px rgba(88,101,242,0.25)';this.style.borderColor='#5865f2';"
+                             onmouseleave="this.style.transform='';this.style.boxShadow='';this.style.borderColor='#2a2f45';">
+                            <!-- Discord banner gradient -->
+                            <div style="height:64px;background:linear-gradient(135deg,#5865f2,#4752c4);"></div>
+                            <!-- Avatar -->
+                            <div style="position:relative;padding:0 16px 16px;">
+                                <div style="position:absolute;top:-28px;left:16px;width:56px;height:56px;border-radius:50%;border:4px solid #131722;overflow:hidden;background:#2a2f45;">
+                                    <img src="${f.avatar_url || 'https://cdn.discordapp.com/embed/avatars/0.png'}" 
+                                         style="width:100%;height:100%;object-fit:cover;" 
+                                         onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                                </div>
+                                <div style="padding-top:34px;">
+                                    <div style="font-weight:700;font-size:14px;color:#fff;">${f.display_name}</div>
+                                    <div style="font-size:12px;color:#8b949e;margin-top:2px;">${discrimPart}</div>
+                                </div>
+                                <div style="margin-top:10px;padding:6px 10px;background:rgba(88,101,242,0.15);border-radius:6px;display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#8b949e;">
+                                    <i class="fab fa-discord" style="color:#5865f2;"></i> Discord
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch(e) {}
+        }
+        loadFriends();
+    </script>
+</body>
+</html>

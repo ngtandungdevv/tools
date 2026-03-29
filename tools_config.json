@@ -1,0 +1,88 @@
+{
+    "tools": {
+        "call-spam": {
+            "name": "Call Spammer",
+            "enabled": true,
+            "icon": "\ud83d\udcde",
+            "desc": "Call Bomb Attack Tool"
+        },
+        "sms-spam": {
+            "name": "SMS SPAMMER",
+            "enabled": true,
+            "icon": "\ud83d\udcac",
+            "desc": "SMS OTP Attack Tool"
+        },
+        "cccd": {
+            "name": "T\u1ea1o CCCD Fake",
+            "enabled": true,
+            "icon": "\ud83e\udeaa",
+            "desc": "Tool t\u1ea1o ph\u00f4i C\u0103n c\u01b0\u1edbc c\u00f4ng d\u00e2n"
+        },
+        "mb-bank": {
+            "name": "Fake Bill MB",
+            "enabled": true,
+            "icon": "\ud83d\udcb8",
+            "desc": "T\u1ea1o bi\u00ean lai chuy\u1ec3n ti\u1ec1n MB Bank"
+        },
+        "ioe": {
+            "name": "IOE Solver",
+            "enabled": false,
+            "icon": "\ud83c\udfaf",
+            "desc": "Auto solve IOE exams"
+        },
+        "discord-quest": {
+            "name": "Discord Quest",
+            "enabled": false,
+            "icon": "\ud83d\udc9c",
+            "desc": "Auto claim Discord Quest rewards - Multi Token"
+        },
+        "data_miner": {
+            "name": "Data Miner",
+            "enabled": false,
+            "icon": "\ud83d\udcca",
+            "desc": "Extract data"
+        },
+        "crypto": {
+            "name": "Crypto Vault",
+            "enabled": false,
+            "icon": "\ud83d\udd10",
+            "desc": "Encryption tool"
+        },
+        "speed": {
+            "name": "Speed Boost",
+            "enabled": false,
+            "icon": "\u26a1",
+            "desc": "Network optimize"
+        },
+        "reg_mail": {
+            "name": "REG MAIL PRO",
+            "enabled": true,
+            "icon": "\ud83d\udce7",
+            "desc": "Auto Create & Inbox mail.tm"
+        },
+        "vebay": {
+            "name": "FAKE V\u00c9 BAY",
+            "enabled": true,
+            "icon": "\u2708\ufe0f",
+            "desc": "T\u1ea1o v\u00e9 VNA"
+        },
+        "vcb": {
+            "name": "FAKE VCB",
+            "enabled": true,
+            "icon": "\ud83c\udfe6",
+            "desc": "T\u1ea1o Bill chuy\u1ec3n ti\u1ec1n Vietcombank"
+        },
+        "downtt": {
+            "name": "TIKTOK DOWNLOADER",
+            "enabled": true,
+            "icon": "\ud83c\udfb5",
+            "desc": "T\u1ea3i Video / MP3 Tiktok kh\u00f4ng logo"
+        },
+        "voice": {
+            "name": "VOICE GENERATOR",
+            "enabled": true,
+            "icon": "\ud83d\udde3\ufe0f",
+            "desc": "Chuy\u1ec3n v\u0103n b\u1ea3n th\u00e0nh gi\u1ecdng n\u00f3i MP3"
+        }
+    }
+}

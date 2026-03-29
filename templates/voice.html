@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Generator | Premium Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/chat.css">
+    <style>
+        :root {
+            --bg: #090b10;
+            --surface: #131722;
+            --surface2: #1e2433;
+            --border: rgba(255,255,255,0.12);
+            --primary: #9d4edd;
+            --primary-hover: #7b2cbf;
+            --cyan: #00e5ff;
+            --text: #ffffff;
+            --dim: #a0aec0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none; -webkit-user-select: none;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(157, 78, 221, 0.15), transparent 60%);
+            z-index: 0; pointer-events: none;
+        }
+        input, textarea, select { user-select: auto; -webkit-user-select: auto; }
+        nav {
+            background: rgba(9, 11, 16, 0.8); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border); padding: 15px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 22px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo i { background: linear-gradient(135deg, var(--primary), var(--cyan)); -webkit-background-clip: text; color: transparent; }
+        .back-btn { color: var(--text); text-decoration: none; border: 1px solid var(--border); padding: 10px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; transition: 0.3s; background: rgba(255,255,255,0.05); }
+        .back-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+        .container { flex: 1; max-width: 1200px; margin: 0 auto; padding: 60px 20px; position: relative; z-index: 1; width: 100%; }
+        
+        .hero { text-align: center; margin-bottom: 60px; }
+        .hero-icon { 
+            width: 120px; height: 120px; margin: 0 auto 30px; 
+            background: linear-gradient(135deg, rgba(157,78,221,0.2), rgba(0,229,255,0.2));
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 36px; display: flex; align-items: center; justify-content: center; 
+            font-size: 56px; color: var(--cyan);
+            box-shadow: 0 0 80px rgba(157,78,221,0.3);
+            position: relative;
+        }
+        .hero-icon::after {
+            content: ''; position: absolute; inset: -1px; border-radius: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--cyan));
+            z-index: -1; opacity: 0.5; filter: blur(10px);
+        }
+        .hero h1 { font-size: 56px; font-weight: 900; margin-bottom: 16px; background: linear-gradient(135deg, #fff, var(--cyan)); -webkit-background-clip: text; color: transparent; letter-spacing: -1px; }
+        .hero p { color: var(--dim); font-size: 18px; font-weight: 500; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+        .panel { 
+            background: rgba(19, 23, 34, 0.7); backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 28px; 
+            padding: 50px; margin-bottom: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); 
+        }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 320px; gap: 40px; }
+        .input-group { display: flex; flex-direction: column; gap: 12px; }
+        label { font-size: 14px; color: var(--cyan); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; display: flex; align-items: center; gap: 8px; }
+        
+        textarea.input-box { width: 100%; min-height: 250px; resize: vertical; font-family: 'Inter', sans-serif; line-height: 1.7; font-size: 18px; }
+        .input-box {
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            padding: 20px 24px; border-radius: 16px; outline: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .input-box:focus { border-color: var(--primary); background: rgba(0,0,0,0.6); box-shadow: 0 0 0 4px rgba(157,78,221,0.15), inset 0 2px 10px rgba(0,0,0,0.5); transform: translateY(-2px); }
+        .input-box::placeholder { color: rgba(255,255,255,0.3); }
+        
+        select.input-box { cursor: pointer; font-size: 16px; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 20px top 50%; background-size: 12px auto; padding-right: 40px; }
+        select.input-box option { background: #131722; padding: 15px; color: #fff; }
+        
+        .char-count { font-size: 13px; color: var(--dim); text-align: right; font-weight: 600; display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+
+        .btn { padding: 20px 40px; border-radius: 16px; border: none; font-weight: 800; cursor: pointer; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; margin-top: 30px; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-generate { background: linear-gradient(135deg, var(--primary), var(--cyan)); color: #fff; box-shadow: 0 10px 30px rgba(157,78,221,0.3); text-shadow: 0 2px 4px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .btn-generate::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transform: translateX(-100%); transition: 0.5s; }
+        .btn-generate:hover { transform: translateY(-4px); box-shadow: 0 15px 40px rgba(157,78,221,0.5); }
+        .btn-generate:hover::before { transform: translateX(100%); }
+        .btn-generate:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; filter: grayscale(1); }
+
+        /* Player */
+        .player-box { display: none; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,229,255,0.2); border-radius: 20px; padding: 30px; margin-top: 40px; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); position: relative; overflow: hidden; }
+        .player-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .player-label { font-size: 16px; color: #fff; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+        .player-label i { color: var(--cyan); }
+        
+        audio#voiceAudio { width: 100%; height: 54px; border-radius: 12px; outline: none; }
+        audio::-webkit-media-controls-panel { background: #1e2433; border: 1px solid rgba(255,255,255,0.1); }
+        audio::-webkit-media-controls-play-button, audio::-webkit-media-controls-mute-button { filter: invert(1); }
+        audio::-webkit-media-controls-current-time-display, audio::-webkit-media-controls-time-remaining-display { color: #fff; }
+        
+        .btn-download { background: rgba(0,229,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); border-radius: 12px; padding: 14px 28px; font-weight: 700; cursor: pointer; font-size: 15px; display: inline-flex; align-items: center; gap: 10px; margin-top: 20px; text-decoration: none; transition: 0.3s; }
+        .btn-download:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(0,229,255,0.4); }
+
+        @media (max-width: 900px) { 
+            .form-row { grid-template-columns: 1fr; gap: 30px; } 
+            .hero h1 { font-size: 40px; }
+            .panel { padding: 30px; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
+    <nav>
+        <a href="/" class="logo"><i class="fas fa-microphone-lines"></i> AI VOICE</a>
+        <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về</a>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <div class="hero-icon"><i class="fas fa-wave-square"></i></div>
+            <h1>Text to Speech Pro</h1>
+            <p>Trải nghiệm công cụ chuyển đổi văn bản thành giọng nói chuẩn AI với chất lượng phòng thu, đa ngôn ngữ.</p>
+        </div>
+
+        <div class="panel">
+            <div class="form-row">
+                <div class="input-group">
+                    <label><i class="fas fa-align-left"></i> Nội dung văn bản</label>
+                    <textarea id="textInput" class="input-box" placeholder="Nhập văn bản bạn muốn chuyển thành giọng nói tại đây... (Hỗ trợ Enter để tạo nhanh)" oninput="updateCount()"></textarea>
+                    <div class="char-count"><span id="charCount">0</span> / 5000 ký tự</div>
+                </div>
+                <div class="input-group">
+                    <label><i class="fas fa-globe"></i> Ngôn ngữ giọng đọc</label>
+                    <select id="langSelect" class="input-box">
+                        <option value="vi">🇻🇳 Tiếng Việt (Vietnamese)</option>
+                        <option value="en">🇺🇸 Tiếng Anh (English)</option>
+                        <option value="ko">🇰🇷 Tiếng Hàn (Korean)</option>
+                        <option value="ja">🇯🇵 Tiếng Nhật (Japanese)</option>
+                        <option value="zh">🇨🇳 Tiếng Trung (Chinese)</option>
+                        <option value="fr">🇫🇷 Tiếng Pháp (French)</option>
+                        <option value="de">🇩🇪 Tiếng Đức (German)</option>
+                        <option value="es">🇪🇸 Tiếng Tây Ban Nha (Spanish)</option>
+                        <option value="th">🇹🇭 Tiếng Thái (Thai)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-generate" id="generateBtn" onclick="generateVoice()">
+                <i class="fas fa-wand-magic-sparkles"></i> CHUYỂN ĐỔI NGAY
+            </button>
+
+            <div class="player-box" id="playerBox">
+                <div class="player-label"><i class="fas fa-circle-play"></i> Kết Quả Giọng Nói</div>
+                <audio id="voiceAudio" controls></audio>
+                <div>
+                    <a id="downloadBtn" href="#" download="voice.mp3" class="btn-download">
+                        <i class="fas fa-cloud-arrow-down"></i> Tải Xuống File MP3
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/chat.js"></script>
+    <script>
+        function updateCount() {
+            document.getElementById('charCount').textContent = document.getElementById('textInput').value.length;
+        }
+
+        document.getElementById('textInput').addEventListener('keydown', function(e) {
+            if(e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                generateVoice();
+            }
+        });
+
+        async function generateVoice() {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) { alert('Vui lòng nhập văn bản để chuyển đổi!'); return; }
+
+            const btn = document.getElementById('generateBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ĐANG TRÍCH XUẤT AI...';
+
+            try {
+                const res = await fetch('/api/voice/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, lang: document.getElementById('langSelect').value })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    const audio = document.getElementById('voiceAudio');
+                    audio.src = data.url + '?t=' + Date.now();
+                    audio.load();
+                    audio.play();
+                    document.getElementById('downloadBtn').href = data.url;
+                    document.getElementById('downloadBtn').download = 'AI_Voice_' + Date.now() + '.mp3';
+                    document.getElementById('playerBox').style.display = 'block';
+                } else {
+                    alert('Lỗi khi tạo giọng nói: ' + data.message);
+                }
+            } catch(e) {
+                alert('Không thể kết nối đến máy chủ AI!');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> CHUYỂN ĐỔI NGAY';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SMS SPAMMER | Cyber Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #090a15;
+            --surface: #141525;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+            --pink: #ec4899;
+            --text: #ffffff;
+            --dim: #a5a5c5;
+            --border: rgba(168,85,247,0.3);
+        }
+
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'JetBrains Mono', monospace; min-height: 100vh;
+            display: flex; flex-direction: column; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .matrix-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; opacity: 0.6; }
+        .matrix-col {
+            position: absolute; top: -100%; font-size: 14px; font-weight: 600;
+            color: rgba(168,85,247,0.25); animation: matrixFall linear infinite;
+            white-space: nowrap; writing-mode: vertical-lr; letter-spacing: 4px;
+        }
+        @keyframes matrixFall { to { transform: translateY(200vh); } }
+
+        .header {
+            position: relative; z-index: 10; background: rgba(9,10,21,0.95);
+            border-bottom: 2px solid var(--border); padding: 16px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .header-brand { display: flex; align-items: center; gap: 12px; }
+        .header-icon {
+            width: 40px; height: 40px; background: linear-gradient(135deg, var(--purple), var(--cyan));
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: #fff; box-shadow: 0 0 15px rgba(168,85,247,0.4);
+        }
+
+        .header-text .title { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
+        .header-text .sub { font-size: 11px; color: var(--cyan); letter-spacing: 1px; }
+
+        .back-link {
+            color: var(--text); text-decoration: none; font-size: 13px; font-weight: 600;
+            background: rgba(168,85,247,0.1); border: 1px solid var(--purple); padding: 8px 16px;
+            border-radius: 6px; transition: 0.2s; display: flex; align-items: center; gap: 8px;
+        }
+        .back-link:hover { background: var(--purple); color: #000; }
+
+        .main { position: relative; z-index: 1; flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .card { width: 100%; max-width: 520px; }
+
+        .hud-panel {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+            padding: 32px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .hud-panel::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--purple), var(--cyan));
+        }
+
+        .panel-header {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+            padding-bottom: 16px; border-bottom: 1px solid rgba(168,85,247,0.15);
+        }
+        .panel-icon-ring {
+            width: 40px; height: 40px; border: 2px solid var(--purple); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--purple);
+            animation: rotateRing 4s linear infinite; box-shadow: 0 0 15px rgba(168,85,247,0.2);
+        }
+        @keyframes rotateRing { to { box-shadow: 0 0 0 4px rgba(168,85,247,0.1), 0 0 0 8px rgba(168,85,247,0.05); } 50% { box-shadow: 0 0 0 8px rgba(168,85,247,0.2), 0 0 0 14px rgba(168,85,247,0.1); } }
+        
+        .panel-title-text .t1 { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: 1px; }
+        .panel-title-text .t2 { font-size: 11px; color: var(--dim); margin-top: 4px; }
+        .panel-badge { background: var(--purple); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 4px; margin-left: auto; }
+
+        .field-label { font-size: 12px; font-weight: 600; color: var(--dim); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .field-label i { color: var(--cyan); }
+        .field-input {
+            width: 100%; background: #0a0812; border: 1px solid var(--border); border-radius: 6px;
+            padding: 16px; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 16px;
+            font-weight: 600; outline: none; transition: 0.2s; margin-bottom: 20px;
+        }
+        .field-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(6,182,212,0.15); }
+        .field-input::placeholder { color: rgba(255,255,255,0.2); }
+
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .fire-btn {
+            width: 100%; padding: 18px; background: linear-gradient(135deg, var(--purple), var(--cyan));
+            border: none; border-radius: 8px; color: #fff; font-family: 'JetBrains Mono', monospace;
+            font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px;
+        }
+        .fire-btn:hover { filter: brightness(1.2); box-shadow: 0 8px 25px rgba(168,85,247,0.4); }
+        .fire-btn:disabled { background: #221133; color: #553377; box-shadow: none; cursor: not-allowed; }
+
+        .stop-btn {
+            width: 100%; padding: 18px; background: rgba(236,72,153,0.1); border: 1px solid var(--pink);
+            border-radius: 8px; color: var(--pink); font-family: 'JetBrains Mono', monospace;
+            font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s;
+            display: none; align-items: center; justify-content: center; gap: 12px; margin-top: 10px;
+        }
+        .stop-btn:hover { background: var(--pink); color: #fff; }
+
+        .log-box {
+            background: #0a0812; border: 1px solid var(--border); border-radius: 8px;
+            padding: 16px; font-size: 13px; line-height: 1.6; display: none; margin-top: 16px; color: #fff;
+        }
+        .log-box.show { display: block; }
+        .log-box.success { border-color: #00f260; color: #00f260; border-left: 4px solid #00f260; }
+        .log-box.error { border-color: var(--pink); color: #ff6699; border-left: 4px solid var(--pink); }
+        .log-box.loading { border-color: var(--cyan); color: var(--cyan); border-left: 4px solid var(--cyan); }
+
+        .note-text { font-size: 11px; color: var(--dim); text-align: center; margin-top: 20px; line-height: 1.6; }
+
+        @media (max-width: 600px) {
+            .header { padding: 12px 16px; }
+            .header-text .title { font-size: 13px; }
+            .header-text .sub { display: none; }
+            .back-link { padding: 6px 12px; font-size: 12px; }
+            .hud-panel { padding: 20px; }
+            .field-row { grid-template-columns: 1fr; gap: 0; }
+            .panel-header { flex-wrap: wrap; }
+            .panel-badge { margin-left: 0; width: 100%; text-align: center; margin-top: 10px; padding: 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg" id="matrix-bg"></div>
+
+    <header class="header">
+        <div class="header-brand">
+            <div class="header-icon"><i class="fas fa-comment-slash"></i></div>
+            <div class="header-text">
+                <div class="title">SMS Spammer</div>
+                <div class="sub">CYBER PAYLOAD TERMINAL</div>
+            </div>
+        </div>
+        <a href="/" class="back-link"><i class="fas fa-chevron-left"></i> Return</a>
+    </header>
+
+    <main class="main">
+        <div class="card">
+            <div class="hud-panel">
+                <div class="panel-header">
+                    <div class="panel-icon-ring"><i class="fas fa-wifi"></i></div>
+                    <div class="panel-title-text">
+                        <div class="t1">PAYLOAD INJECTION</div>
+                        <div class="t2">SMS/OTP Burst Attack System</div>
+                    </div>
+                    <div class="panel-badge">ARMED</div>
+                </div>
+
+                <div>
+                    <div class="field-label"><i class="fas fa-mobile-screen"></i> SĐT MỤC TIÊU</div>
+                    <input type="tel" class="field-input" id="phone" placeholder="0912 345 678" autocomplete="off">
+                </div>
+
+                <div class="field-row">
+                    <div>
+                        <div class="field-label"><i class="fas fa-layer-group"></i> SỐ LẦN</div>
+                        <input type="number" class="field-input" id="count" value="5" min="1" max="100">
+                    </div>
+                    <div>
+                        <div class="field-label"><i class="fas fa-network-wired"></i> VECTOR</div>
+                        <input type="text" class="field-input" value="OTP + SMS" readonly style="color:var(--cyan);">
+                    </div>
+                </div>
+
+                <button class="fire-btn" id="btn" onclick="startSpam()"><i class="fas fa-paper-plane"></i> FIRE PAYLOAD</button>
+                <button class="stop-btn" id="stop-btn" onclick="stopSpam()"><i class="fas fa-circle-stop"></i> TERMINATE SESSION</button>
+
+                <div class="note-text">Tiến trình SMS burst sẽ chạy ngầm trên server. Nhấn TERMINATE để dừng.</div>
+            </div>
+            <div class="log-box" id="log-box"></div>
+        </div>
+    </main>
+
+    <script>
+        const mb = document.getElementById('matrix-bg');
+        const chars = '01アイウエオカキクケコSATACKHACKERSMS';
+        for (let i = 0; i < 20; i++) {
+            const col = document.createElement('div');
+            col.className = 'matrix-col'; col.style.left = (i * 5) + '%';
+            col.style.animationDuration = (8 + Math.random() * 8) + 's';
+            col.style.animationDelay = (Math.random() * 5) + 's';
+            col.textContent = chars.split('').sort(() => Math.random() - 0.5).join('');
+            mb.appendChild(col);
+        }
+
+        async function startSpam() {
+            const phone = document.getElementById('phone').value.trim();
+            const count = parseInt(document.getElementById('count').value);
+            const btn = document.getElementById('btn');
+
+            if (!phone) { showLog('error', '✖ Vui lòng nhập số điện thoại mục tiêu!'); return; }
+
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INJECTING...';
+            showLog('loading', `◈ Connecting to OTP networks...\n◈ Target: ${phone}\n◈ Preparing ${count} payload(s)...\n◈ Awaiting server confirmation...`);
+
+            try {
+                const res = await fetch('/api/sms-spam/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, count }) });
+                const data = await res.json();
+                if (data.success) {
+                    showLog('success', `✔ PAYLOAD INJECTED SUCCESSFULLY\n◈ Target: ${phone}\n◈ Rounds: ${count}\n◈ Process running in background...`);
+                    btn.style.display = 'none'; document.getElementById('stop-btn').style.display = 'flex';
+                } else {
+                    showLog('error', `✖ INJECTION FAILED: ${data.message}`);
+                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> FIRE PAYLOAD';
+                }
+            } catch (e) {
+                showLog('error', `✖ CONNECTION ERROR: ${e.message}`);
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> FIRE PAYLOAD';
+            }
+        }
+
+        async function stopSpam() {
+            const phone = document.getElementById('phone').value.trim();
+            const stopBtn = document.getElementById('stop-btn');
+            stopBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> TERMINATING...'; stopBtn.disabled = true;
+
+            try {
+                const res = await fetch('/api/sms-spam/stop', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) });
+                const data = await res.json();
+                showLog('error', `■ SESSION TERMINATED\n◈ ${data.message}`);
+            } catch (e) { console.error(e); }
+            finally {
+                stopBtn.style.display = 'none'; stopBtn.disabled = false; stopBtn.innerHTML = '<i class="fas fa-circle-stop"></i> TERMINATE SESSION';
+                const btn = document.getElementById('btn'); btn.style.display = 'flex'; btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> FIRE PAYLOAD';
+            }
+        }
+
+        function showLog(type, msg) {
+            const log = document.getElementById('log-box');
+            log.className = 'log-box show ' + type;
+            log.innerHTML = msg.replace(/\n/g, '<br>');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DISCORD QUEST | Token Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #1e1f22;
+            --surface: #2b2d31;
+            --surface2: #313338;
+            --blurple: #5865F2;
+            --blurple-hover: #4752c4;
+            --green: #23a559;
+            --red: #da373c;
+            --yellow: #f0b232;
+            --text: #f2f3f5;
+            --dim: #b5bac1;
+            --border: #1e1f22;
+        }
+
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'Inter', sans-serif; min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .header {
+            position: sticky; top: 0; z-index: 100; background: var(--surface2);
+            border-bottom: 1px solid var(--border); padding: 12px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .header-brand { display: flex; align-items: center; gap: 12px; }
+        .header-icon {
+            width: 40px; height: 40px; background: var(--blurple); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff;
+        }
+        .header-info .t1 { font-size: 15px; font-weight: 700; color: #fff; }
+        .header-info .t2 { font-size: 11px; color: var(--dim); }
+
+        .back-link {
+            color: var(--text); background: var(--surface); border-radius: 4px;
+            padding: 8px 12px; font-size: 13px; font-weight: 600; text-decoration: none;
+            display: flex; align-items: center; gap: 8px; transition: 0.2s;
+        }
+        .back-link:hover { background: #3f4147; }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 16px; display: grid; gap: 20px; grid-template-columns: 1fr 340px; }
+        @media (max-width: 800px) { .container { grid-template-columns: 1fr; } }
+
+        .panel { background: var(--surface2); border-radius: 8px; overflow: hidden; }
+        .panel-header {
+            padding: 16px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .panel-title { font-size: 14px; font-weight: 700; color: var(--text); text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        .panel-body { padding: 16px; }
+
+        /* Left side - Action & Log */
+        .controls-row { display: flex; gap: 12px; margin-bottom: 16px; }
+        .btn {
+            flex: 1; padding: 12px; border: none; border-radius: 4px; color: #fff;
+            font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
+        }
+        .btn-play { background: var(--green); } .btn-play:hover { background: #1a7c43; }
+        .btn-stop { background: var(--red); display: none; } .btn-stop:hover { background: #a1282c; }
+        
+        .status-badge { background: var(--surface); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .status-badge.stopped { color: var(--dim); } .status-badge.running { color: var(--green); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+        .log-terminal {
+            background: #111214; border-radius: 6px; padding: 12px; height: 350px;
+            overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.5; color: var(--dim);
+        }
+        .log-terminal p { margin-bottom: 4px; }
+        .log-terminal .info { color: var(--blurple); }
+        .log-terminal .success { color: var(--green); }
+        .log-terminal .warning { color: var(--yellow); }
+        .log-terminal .error { color: var(--red); }
+        .log-terminal::-webkit-scrollbar { width: 8px; }
+        .log-terminal::-webkit-scrollbar-thumb { background: #202225; border-radius: 4px; }
+
+        /* Right side - Token Management */
+        .token-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; padding-right: 4px; margin-bottom: 16px; }
+        .token-list::-webkit-scrollbar { width: 6px; } .token-list::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 4px; }
+        
+        .token-item { background: var(--surface); border-radius: 6px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; }
+        .token-item.active { border-color: var(--blurple); }
+        .token-info { display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+        .token-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .token-val { font-size: 11px; color: var(--dim); font-family: 'JetBrains Mono', monospace; }
+        
+        .token-actions { display: flex; gap: 6px; }
+        .btn-icon { background: var(--surface2); border: none; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--dim); transition: 0.2s; }
+        .btn-icon:hover { background: #3f4147; color: #fff; }
+        .btn-icon.del:hover { color: var(--red); background: rgba(218,55,60,0.1); }
+
+        .add-token-form { display: flex; gap: 8px; background: var(--surface); padding: 12px; border-radius: 6px; }
+        .token-input { flex: 1; background: #1e1f22; border: 1px solid var(--border); border-radius: 4px; padding: 8px 12px; color: #fff; font-size: 13px; outline: none; }
+        .token-input:focus { border-color: var(--blurple); }
+        .btn-add { background: var(--blurple); color: #fff; border: none; border-radius: 4px; padding: 0 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-add:hover { background: var(--blurple-hover); }
+
+        @media (max-width: 600px) {
+            .header { padding: 12px 16px; }
+            .header-text .t2 { display: none; }
+            .container { padding: 0 16px; margin: 20px auto; }
+            .controls-row { flex-direction: column; }
+            .log-terminal { height: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-brand">
+            <div class="header-icon"><i class="fab fa-discord"></i></div>
+            <div class="header-info">
+                <div class="t1">Discord Quest</div>
+                <div class="t2">AUTO CLAIM MULTI-ACCOUNT</div>
+            </div>
+        </div>
+        <a href="/" class="back-link"><i class="fas fa-chevron-left"></i> Return</a>
+    </header>
+
+    <div class="container">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title"><i class="fas fa-terminal"></i> BẢNG ĐIỀU KHIỂN</div>
+                <div class="status-badge stopped" id="status-badge">ĐÃ DỪNG</div>
+            </div>
+            <div class="panel-body">
+                <div class="controls-row">
+                    <button class="btn btn-play" id="btn-start" onclick="startBot()"><i class="fas fa-play"></i> START BOT</button>
+                    <button class="btn btn-stop" id="btn-stop" onclick="stopBot()"><i class="fas fa-stop"></i> STOP BOT</button>
+                </div>
+                <div class="log-terminal" id="log-terminal">
+                    <p class="info">[SYSTEM] Engine Discord Quest initialized.</p>
+                    <p>[SYSTEM] Load token list từ bên phải để bắt đầu.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title"><i class="fas fa-users"></i> QUẢN LÝ TOKEN</div>
+                <span style="font-size:12px;color:var(--dim);" id="token-count">0/10</span>
+            </div>
+            <div class="panel-body">
+                <div class="token-list" id="token-list">
+                    <!-- JS sẽ nạp token vào đây -->
+                </div>
+                <form class="add-token-form" id="add-form" onsubmit="addToken(event)">
+                    <input type="text" class="token-input" id="new-token" placeholder="Paste Discord Token..." required autocomplete="off">
+                    <button type="submit" class="btn-add"><i class="fas fa-plus"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isRunning = false;
+        let logInterval = null;
+
+        // Fetch tokens and render
+        async function loadTokens() {
+            try {
+                const res = await fetch('/api/discord/tokens');
+                const data = await res.json();
+                const list = document.getElementById('token-list');
+                document.getElementById('token-count').textContent = `${data.tokens.length}/MAX`;
+                
+                list.innerHTML = '';
+                if(data.tokens.length === 0) {
+                    list.innerHTML = '<div style="text-align:center;color:var(--dim);font-size:12px;padding:20px;">Chưa có token nào!</div>';
+                    return;
+                }
+
+                data.tokens.forEach(tk => {
+                    const masked = tk.substring(0, 15) + '...';
+                    list.innerHTML += `
+                        <div class="token-item">
+                            <div class="token-info">
+                                <span class="token-name">Account</span>
+                                <span class="token-val">${masked}</span>
+                            </div>
+                            <div class="token-actions">
+                                <button class="btn-icon del" onclick="deleteToken('${tk}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch(e) {}
+        }
+
+        async function addToken(e) {
+            e.preventDefault();
+            const input = document.getElementById('new-token');
+            const token = input.value.trim();
+            if(!token) return;
+
+            try {
+                const res = await fetch('/api/discord/token', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token })
+                });
+                if(res.ok) { input.value = ''; loadTokens(); printLog(`[+] Token added: ${token.substring(0,15)}...`, 'success'); }
+            } catch(err) {}
+        }
+
+        async function deleteToken(token) {
+            try {
+                const res = await fetch('/api/discord/token', {
+                    method: 'DELETE', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token })
+                });
+                if(res.ok) { loadTokens(); printLog(`[-] Token removed`, 'warning'); }
+            } catch(err) {}
+        }
+
+        function printLog(msg, type='') {
+            const term = document.getElementById('log-terminal');
+            const p = document.createElement('p');
+            p.className = type;
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            term.appendChild(p);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        async function fetchLogs() {
+            if(!isRunning) return;
+            try {
+                const res = await fetch('/api/discord/logs');
+                const data = await res.json();
+                if(data.logs && data.logs.length > 0) {
+                    data.logs.forEach(l => printLog(l, l.toLowerCase().includes('lỗi') ? 'error' : 'info'));
+                }
+            } catch(e) {}
+        }
+
+        async function checkStatus() {
+            try {
+                const res = await fetch('/api/discord/status');
+                const data = await res.json();
+                isRunning = data.running;
+                updateUI();
+                if(isRunning && !logInterval) logInterval = setInterval(fetchLogs, 2000);
+                if(!isRunning && logInterval) { clearInterval(logInterval); logInterval = null; }
+            } catch(e) {}
+        }
+
+        async function startBot() {
+            try {
+                const res = await fetch('/api/discord/start', {method: 'POST'});
+                const data = await res.json();
+                if(data.success) { isRunning = true; updateUI(); printLog('BOT STARTED!', 'success'); logInterval = setInterval(fetchLogs, 2000); }
+                else printLog(data.message, 'error');
+            } catch(e) {}
+        }
+
+        async function stopBot() {
+            try {
+                const res = await fetch('/api/discord/stop', {method: 'POST'});
+                if(res.ok) { isRunning = false; updateUI(); printLog('BOT STOPPED!', 'warning'); clearInterval(logInterval); logInterval = null; }
+            } catch(e) {}
+        }
+
+        function updateUI() {
+            const bStart = document.getElementById('btn-start');
+            const bStop = document.getElementById('btn-stop');
+            const badge = document.getElementById('status-badge');
+            
+            if(isRunning) {
+                bStart.style.display = 'none'; bStop.style.display = 'flex';
+                badge.className = 'status-badge running'; badge.textContent = 'RUNNING';
+            } else {
+                bStart.style.display = 'flex'; bStop.style.display = 'none';
+                badge.className = 'status-badge stopped'; badge.textContent = 'ĐÃ DỪNG';
+            }
+        }
+
+        // Init
+        loadTokens();
+        checkStatus();
+        setInterval(checkStatus, 5000); // Check periodically
+    </script>
+</body>
+</html>

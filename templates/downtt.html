@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TIKTOK DOWNLOADER</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/chat.css">
+    <style>
+        :root {
+            --bg: #090b10;
+            --surface: #131722;
+            --surface2: #1a1d27;
+            --border: #30364d;
+            --primary: #ff0050; /* Tiktok pink */
+            --primary-hover: #ff3377;
+            --text: #f0f6fc;
+            --dim: #8b949e;
+            --cyan: #00f2fe;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Nav */
+        nav {
+            background: rgba(19, 23, 34, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-size: 20px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo i { color: var(--primary); font-size: 24px; text-shadow: 2px 2px 0 var(--cyan); }
+        .back-btn { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; text-decoration: none; transition: 0.2s; font-size: 14px; }
+        .back-btn:hover { background: var(--surface2); color: var(--primary); border-color: var(--primary); }
+
+        .container {
+            flex: 1;
+            padding: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 30px;
+        }
+
+        .title { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 10px; color:#fff;}
+        .subtitle { text-align: center; color: var(--dim); font-size:14px; margin-bottom: 30px;}
+
+        /* Search Bar */
+        .search-box {
+            display: flex;
+            background: #000;
+            border: 2px solid var(--border);
+            border-radius: 30px;
+            padding: 5px;
+            transition: 0.3s;
+        }
+        .search-box:focus-within { border-color: var(--primary); box-shadow: 0 0 15px rgba(255, 0, 80, 0.2); }
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 16px;
+            outline: none;
+        }
+        .search-btn {
+            background: linear-gradient(45deg, var(--primary), var(--cyan));
+            color: #fff;
+            border: none;
+            padding: 0 30px;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .search-btn:hover { opacity: 0.9; }
+
+        /* Results Area */
+        .result-box {
+            margin-top: 30px;
+            border-top: 1px solid var(--border);
+            padding-top: 30px;
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: var(--surface2);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .author-info { display: flex; align-items: center; gap: 15px; font-size:15px; }
+        .author-info i { color: var(--cyan); font-size: 20px;}
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+        .stat-item { background: #000; padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; color: #fff;}
+        .stat-lbl { font-size: 11px; color: var(--dim); text-transform: uppercase; margin-top:4px;}
+
+        .media-players { display: flex; flex-direction: column; gap: 20px;}
+        .video-container { text-align: center; background: #000; border-radius: 12px; overflow:hidden;}
+        video { max-width: 100%; max-height: 500px; display: block; margin: 0 auto; outline:none; }
+
+        .slideshow-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;
+        }
+        .slideshow-grid img { width: 100%; border-radius: 8px; object-fit: cover; aspect-ratio: 9/16; cursor: pointer;}
+        
+        .download-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;}
+        .d-btn {
+            padding: 12px 25px; border-radius: 30px; font-weight: 600; text-decoration: none; color: #fff;
+            display: flex; align-items: center; gap: 8px; transition: 0.2s; font-size:14px;
+        }
+        .d-video { background: var(--primary); }
+        .d-music { background: var(--cyan); color: #000; }
+        .d-btn:hover { transform: translateY(-2px); opacity: 0.9;}
+
+        #loadingState { text-align:center; color: var(--dim); padding: 50px 0; display:none;}
+        #loadingState i { font-size: 40px; margin-bottom: 20px; color: var(--primary); }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">
+            <i class="fab fa-tiktok"></i>
+            ダウン TT
+        </a>
+        <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </nav>
+
+    <div class="container">
+        <!-- Main Panel -->
+        <div class="panel">
+            <div class="title">Tiktok No-Watermark Downloader</div>
+            <div class="subtitle">Dán link video Tiktok, Reels, hay Slideshow vào đây để tải.</div>
+            
+            <div class="search-box">
+                <input type="text" id="ttUrl" class="search-input" placeholder="https://vt.tiktok.com/ZSxxxx..." autocomplete="off">
+                <button class="search-btn" onclick="fetchVideo()">Duyệt <i class="fas fa-search" style="margin-left:5px;"></i></button>
+            </div>
+
+            <div id="loadingState">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <div>Đang kết nối API TikWM...</div>
+            </div>
+
+            <div class="result-box" id="resultBox">
+                <div class="info-card">
+                    <div class="author-info">
+                        <i class="fas fa-user-circle"></i>
+                        <div>
+                            <div style="font-weight:700; color:#fff;" id="rAuthor">@username</div>
+                            <div style="font-size:12px; color:var(--dim); margin-top:2px;" id="rTitle">Video title here...</div>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item"><div class="stat-val" id="sView">0</div><div class="stat-lbl"><i class="fas fa-play"></i> Xem</div></div>
+                        <div class="stat-item"><div class="stat-val" id="sLike">0</div><div class="stat-lbl"><i class="fas fa-heart"></i> Tim</div></div>
+                        <div class="stat-item"><div class="stat-val" id="sCmt">0</div><div class="stat-lbl"><i class="fas fa-comment"></i> Cmt</div></div>
+                    </div>
+                </div>
+
+                <div class="media-players" id="mediaContainer">
+                    <!-- Dynamic insert -->
+                </div>
+
+                <div class="download-btns" id="downloadBtns">
+                    <!-- Dynamic insert -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/chat.js"></script>
+    <script>
+        function formatNumber(num) {
+            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        }
+
+        async function fetchVideo() {
+            const url = document.getElementById('ttUrl').value.trim();
+            if(!url) { alert("Vui lòng nhập Link Tiktok"); return; }
+
+            const resBox = document.getElementById('resultBox');
+            const loadBox = document.getElementById('loadingState');
+            
+            resBox.style.display = 'none';
+            loadBox.style.display = 'block';
+
+            try {
+                const res = await fetch('/api/downtt/process', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url: url})
+                });
+                const response = await res.json();
+                loadBox.style.display = 'none';
+
+                if(response.success) {
+                    const data = response.data;
+                    document.getElementById('rAuthor').textContent = data.author;
+                    document.getElementById('rTitle').textContent = data.title;
+                    document.getElementById('sView').textContent = formatNumber(data.stats.views);
+                    document.getElementById('sLike').textContent = formatNumber(data.stats.likes);
+                    document.getElementById('sCmt').textContent = formatNumber(data.stats.comments);
+
+                    const mContainer = document.getElementById('mediaContainer');
+                    const dbContainer = document.getElementById('downloadBtns');
+                    mContainer.innerHTML = '';
+                    dbContainer.innerHTML = '';
+                    
+                    // Music button is always available if exists
+                    if(data.media.music_url) {
+                        dbContainer.innerHTML += `<a href="${data.media.music_url}" target="_blank" class="d-btn d-music"><i class="fas fa-music"></i> Tải Nhạc MP3</a>`;
+                    }
+
+                    if(data.media.type === 'video' && data.media.video_url) {
+                        mContainer.innerHTML = `
+                            <div class="video-container">
+                                <video controls preload="auto" src="${data.media.video_url}"></video>
+                            </div>
+                        `;
+                        dbContainer.innerHTML += `<a href="${data.media.video_url}" target="_blank" class="d-btn d-video"><i class="fas fa-video"></i> Tải Video MP4 (${data.media.size_mb}MB)</a>`;
+                    } 
+                    else if(data.media.type === 'slideshow' && data.media.images.length > 0) {
+                        let html = '<div class="slideshow-grid">';
+                        data.media.images.forEach(img => {
+                            html += `<a href="${img}" target="_blank"><img src="${img}" title="Click the image to expand"></a>`;
+                        });
+                        html += '</div>';
+                        mContainer.innerHTML = html;
+                        dbContainer.innerHTML += `<div style="width:100%; text-align:center; color:var(--dim); font-size:12px;">👆 Bấm vào từng ảnh để xem chi tiết hoặc Tải Ảnh về</div>`;
+                    }
+
+                    resBox.style.display = 'flex';
+                } else {
+                    alert("Lỗi: " + response.message);
+                }
+            } catch(e) {
+                loadBox.style.display = 'none';
+                alert("Không thể kết nối Server!");
+            }
+        }
+    </script>
+</body>
+</html>

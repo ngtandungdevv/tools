@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS SPAMMER | Pro Engine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Hacker Theme */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #050505; --panel: #111; --red: #ff0040; --cyan: #00d4ff; --green: #00ff41; }
+        body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', monospace; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        .header { background: var(--panel); border-bottom: 2px solid var(--red); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: bold; color: var(--cyan); letter-spacing: 2px; }
+        .logo span { color: var(--red); }
+        .back-btn { background: transparent; color: #555; border: 1px solid #333; padding: 8px 15px; text-decoration: none; font-size: 12px; transition: 0.3s; }
+        .back-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+        
+        .container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .spam-card { background: var(--panel); border: 1px solid #222; padding: 40px; width: 100%; max-width: 500px; box-shadow: 0 0 20px rgba(255, 0, 64, 0.1); }
+        h2 { color: var(--cyan); margin-bottom: 30px; text-align: center; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px dashed #333; padding-bottom: 20px; }
+        
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 11px; color: #777; text-transform: uppercase; margin-bottom: 8px; }
+        .input-group input { width: 100%; background: #000; border: 1px solid #333; padding: 15px; color: var(--cyan); font-family: inherit; font-size: 14px; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: var(--red); box-shadow: 0 0 10px rgba(255, 0, 64, 0.2); }
+        
+        .start-btn { width: 100%; background: var(--red); color: #000; border: none; padding: 15px; font-weight: bold; font-size: 16px; font-family: inherit; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; transition: 0.3s; display: flex; justify-content: center; gap: 10px; align-items: center; }
+        .start-btn:hover { background: #ff3366; box-shadow: 0 0 20px rgba(255, 0, 64, 0.5); }
+        .start-btn:disabled { background: #333; color: #555; cursor: not-allowed; box-shadow: none; pointer-events: none; }
+        
+        .status-box { margin-top: 20px; padding: 15px; background: #000; border: 1px solid #222; font-size: 12px; display: none; line-height: 1.6; }
+        .status-box.success { color: var(--green); border-color: var(--green); display: block; }
+        .status-box.error { color: var(--red); border-color: var(--red); display: block; }
+        .status-box.pulse { color: var(--cyan); border-color: var(--cyan); display: block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
+        .info-text { margin-top: 15px; font-size: 10px; color: #555; text-align: center; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">TOOL_<span>SPAM_SMS</span></div>
+        <a href="/" class="back-btn"><i class="fas fa-chevron-left"></i> RETURN </a>
+    </header>
+
+    <div class="container">
+        <div class="spam-card">
+            <h2><i class="fas fa-satellite-dish"></i> Attack Payload</h2>
+            
+            <div class="input-group">
+                <label><i class="fas fa-phone-alt"></i> SĐT MỤC TIÊU</label>
+                <input type="text" id="phone" placeholder="VD: 0912345678" autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label><i class="fas fa-sync-alt"></i> SỐ LẦN SPAM (Iterations)</label>
+                <input type="number" id="count" value="5" min="1" max="100">
+            </div>
+
+            <button class="start-btn" id="btn" onclick="startSpam()">
+                <i class="fas fa-fire"></i> [ INITIATE ATTACK ]
+            </button>
+            <div class="info-text">Warning: Tool chạy ngầm trên server bằng script nat1.py. Quá trình bắn SMS sẽ được đẩy theo schedule (chờ 60s, 120s giữa các lần báo thức mục tiêu).</div>
+
+            <div id="status" class="status-box"></div>
+        </div>
+    </div>
+
+    <script>
+        async function startSpam() {
+            const phone = document.getElementById('phone').value.trim();
+            const count = parseInt(document.getElementById('count').value);
+            const statusBox = document.getElementById('status');
+            const btn = document.getElementById('btn');
+
+            if(!phone) {
+                statusBox.className = 'status-box error';
+                statusBox.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Vui lòng nhập số điện thoại mục tiêu!';
+                return;
+            }
+            if(count <= 0) {
+                statusBox.className = 'status-box error';
+                statusBox.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Số lần spam phải >= 1!';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> TRANSMITTING...';
+            statusBox.className = 'status-box pulse';
+            statusBox.innerHTML = `<i class="fas fa-satellite"></i> Đang lock mục tiêu: ${phone}... Khởi tạo request`;
+
+            try {
+                const response = await fetch('/api/spam/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, count })
+                });
+
+                const data = await response.json();
+
+                if(data.success) {
+                    statusBox.className = 'status-box success';
+                    statusBox.innerHTML = `<i class="fas fa-check-circle"></i> <b>THÀNH CÔNG!</b> Đã nã đạn vào ${phone} (${count} lượt).<br><br><span style="color:#aaa">Script nat1.py đang chạy ngầm an toàn trên C2 Server. Lượt kế tiếp sẽ tự động kích hoạt sau mỗi phút.</span>`;
+                } else {
+                    statusBox.className = 'status-box error';
+                    statusBox.innerHTML = `<i class="fas fa-times-circle"></i> LỖI: ${data.message}`;
+                }
+            } catch (err) {
+                statusBox.className = 'status-box error';
+                statusBox.innerHTML = `<i class="fas fa-times-circle"></i> LỖI MẠNG: ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-fire"></i> [ INITIATE ATTACK ]';
+            }
+        }
+    </script>
+</body>
+</html>

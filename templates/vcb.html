@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fake VCB</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/chat.css">
+    <style>
+        :root {
+            --bg: #090b10;
+            --surface: #131722;
+            --surface2: #1a1d27;
+            --border: #30364d;
+            --primary: #59d102; /* Vietcombank Green */
+            --primary-hover: #4bad02;
+            --text: #f0f6fc;
+            --dim: #8b949e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Nav */
+        nav {
+            background: rgba(19, 23, 34, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-size: 20px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo i { color: var(--primary); font-size: 24px; }
+        .back-btn { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; text-decoration: none; transition: 0.2s; font-size: 14px; }
+        .back-btn:hover { background: var(--surface2); color: var(--primary); border-color: var(--primary); }
+
+        .container {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .panel-header {
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        /* Forms & Inputs */
+        .control-group { padding: 20px; display: flex; flex-direction: column; gap:12px; }
+        .input-wrapper { display: flex; flex-direction: column; gap: 6px; }
+        .input-wrapper label { font-size: 12px; color: var(--dim); }
+        .input-box {
+            width: 100%; background: #000; border: 1px solid var(--border); color: #fff;
+            padding: 10px 14px; border-radius: 8px; font-family: 'Inter', sans-serif;
+            font-size: 14px; outline: none; transition: 0.2s;
+        }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(89, 209, 2, 0.15); }
+        
+        .btn-submit {
+            width: 100%; background: var(--primary); color: #000; border: none; padding: 14px;
+            border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(89, 209, 2, 0.3); }
+
+        /* Moca specific styling */
+        select.input-box { appearance: none; cursor: pointer; }
+
+        /* Preview Panel */
+        .preview-area {
+            flex: 1; padding: 20px; display: flex; align-items: center; justify-content: center;
+            background: repeating-linear-gradient(45deg, #131722, #131722 10px, #1a1d27 10px, #1a1d27 20px);
+            position: relative; overflow: hidden;
+        }
+        .preview-img { max-width: 100%; max-height: 70vh; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: none; }
+        .empty-state { color: var(--dim); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .empty-state i { font-size: 40px; color: #30364d; }
+
+        .btn-download {
+            position: absolute; bottom: 20px; right: 20px;
+            background: #fff; color: #000; border: none; padding: 10px 20px;
+            border-radius: 20px; font-weight: 600; cursor: pointer; display: none; gap: 8px;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2); transition: 0.2s; text-decoration: none;
+        }
+        .btn-download:hover { transform: scale(1.05); }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">
+            <i class="fas fa-university"></i>
+            FAKE BILL VCB
+        </a>
+        <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </nav>
+
+    <div class="container">
+        <!-- Control Panel -->
+        <div class="panel">
+            <div class="panel-header"><i class="fas fa-cogs"></i> Form Receipt (Vietcombank)</div>
+            <div class="control-group">
+                <div class="input-wrapper">
+                    <label>Số tiền (VND)</label>
+                    <input type="number" id="sotien" class="input-box" placeholder="VD: 5000000">
+                </div>
+                <div class="input-wrapper">
+                    <label>Tên Người Nhận</label>
+                    <input type="text" id="ten" class="input-box" placeholder="VD: NGUYEN VAN A">
+                </div>
+                <div class="input-wrapper">
+                    <label>Số Tài Khoản Nhận</label>
+                    <input type="text" id="taikhoan" class="input-box" placeholder="VD: 1055961132">
+                </div>
+                <div class="input-wrapper">
+                    <label>Ngân Hàng Nhận Mã (MB, VCB, TCB...)</label>
+                    <input type="text" id="bank" class="input-box" placeholder="VD: VCB">
+                </div>
+                <div class="input-wrapper">
+                    <label>Nội Dung Chuyển Tiền</label>
+                    <input type="text" id="noidung" class="input-box" placeholder="VD: CHUYEN TIEN">
+                </div>
+
+                <details style="color:var(--dim); font-size:12px; cursor:pointer; margin-top:5px;">
+                    <summary>Cài đặt nâng cao</summary>
+                    <div style="margin-top:10px; display:flex; flex-direction:column; gap:10px;">
+                        <input type="text" id="magd" class="input-box" placeholder="Mã giao dịch (Tự động tạo nếu rỗng)">
+                        <input type="text" id="thoigian" class="input-box" placeholder="Thời gian (VD: 14:30 29/10/2025)">
+                        <select id="pin" class="input-box">
+                            <option value="100">Pin 100%</option>
+                            <option value="80">Pin 80%</option>
+                            <option value="60">Pin 60%</option>
+                            <option value="40">Pin 40%</option>
+                            <option value="35">Pin 35%</option>
+                            <option value="22">Pin 22%</option>
+                            <option value="10">Pin 10%</option>
+                        </select>
+                    </div>
+                </details>
+
+                <button class="btn-submit" id="btnGen" onclick="generateVCB()"><i class="fas fa-magic"></i> Tạo Bill VCB</button>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="panel">
+            <div class="panel-header"><i class="fas fa-image"></i> Kết Quả Bill</div>
+            <div class="preview-area" id="previewArea">
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-receipt"></i>
+                    <div>Nhập thông tin bên trái để tạo hình ảnh</div>
+                </div>
+                <img id="resultImg" class="preview-img" src="" alt="Bill Result">
+                <a id="btnDownload" class="btn-download" download="vcb_bill.png"><i class="fas fa-download"></i> Tải Xuống</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/chat.js"></script>
+    <script>
+        function generateVCB() {
+            const btn = document.getElementById('btnGen');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            btn.disabled = true;
+
+            const sotien = document.getElementById('sotien').value.trim();
+            const ten = document.getElementById('ten').value.trim();
+            const taikhoan = document.getElementById('taikhoan').value.trim();
+            const bank = document.getElementById('bank').value.trim();
+
+            if(!sotien || !ten || !taikhoan || !bank) {
+                alert("Vui lòng nhập Số Tiền, Tên, Số Tài Khoản và Ngân Hàng.");
+                btn.innerHTML = '<i class="fas fa-magic"></i> Tạo Bill VCB';
+                btn.disabled = false;
+                return;
+            }
+            
+            // Format time defaults to now if empty
+            const d = new Date();
+            const defTime = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+
+            const payload = {
+                sotien: sotien,
+                ten: ten,
+                taikhoan: taikhoan,
+                bank: bank,
+                noidung: document.getElementById('noidung').value.trim() || "CHUYEN TIEN",
+                magd: document.getElementById('magd').value.trim(),
+                thoigian: document.getElementById('thoigian').value.trim() || defTime,
+                pin: document.getElementById('pin').value
+            };
+
+            fetch('/api/vcb/generate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            }).then(r=>r.json()).then(data => {
+                btn.innerHTML = '<i class="fas fa-magic"></i> Tạo Bill VCB';
+                btn.disabled = false;
+                
+                if(data.success) {
+                    document.getElementById('emptyState').style.display = 'none';
+                    const img = document.getElementById('resultImg');
+                    img.src = data.base64;
+                    img.style.display = 'block';
+                    
+                    const down = document.getElementById('btnDownload');
+                    down.href = data.base64;
+                    down.style.display = 'flex';
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            }).catch(e => {
+                btn.innerHTML = '<i class="fas fa-magic"></i> Tạo Bill VCB';
+                btn.disabled = false;
+                alert('Connection error');
+            });
+        }
+    </script>
+</body>
+</html>
