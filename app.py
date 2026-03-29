@@ -93,15 +93,6 @@ def init_db():
                   user_agent TEXT,
                   path TEXT)''')
     
-    c.execute('''CREATE TABLE IF NOT EXISTS music
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  title TEXT,
-                  filename TEXT,
-                  url TEXT,
-                  is_upload INTEGER DEFAULT 0,
-                  order_index INTEGER DEFAULT 0,
-                  created_at TEXT)''')
-    
     c.execute('''CREATE TABLE IF NOT EXISTS social_links
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   platform TEXT,
@@ -199,12 +190,10 @@ def index():
     c.execute("SELECT platform, url, icon, display_name FROM social_links ORDER BY order_index")
     social_links = c.fetchall()
     
-    c.execute("SELECT title, filename, url, is_upload FROM music ORDER BY order_index")
-    playlist = c.fetchall()
     conn.close()
     
     return render_template('index.html', tools=enabled_tools, visitor_ip=get_client_ip(), 
-                         social_links=social_links, playlist=playlist)
+                         social_links=social_links)
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
@@ -240,9 +229,6 @@ def admin_panel():
     c.execute("SELECT COUNT(*) FROM logs WHERE timestamp >= date('now')")
     total_visits = c.fetchone()[0] or 0
     
-    c.execute("SELECT * FROM music ORDER BY order_index")
-    music_list = c.fetchall()
-    
     c.execute("SELECT * FROM social_links ORDER BY order_index")
     social_list = c.fetchall()
     
@@ -254,57 +240,7 @@ def admin_panel():
                          unique_ips=unique_ips, 
                          total_visits=total_visits,
                          current_ip=get_client_ip(),
-                         music_list=music_list,
                          social_list=social_list)
-
-@app.route('/admin/music/add', methods=['POST'])
-@admin_required
-def add_music():
-    title = request.form.get('title')
-    url = request.form.get('url')
-    file = request.files.get('file')
-    
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    
-    try:
-        if file and file.filename:
-            ext = file.filename.split('.')[-1]
-            filename = f"{uuid.uuid4()}.{ext}"
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
-            c.execute("INSERT INTO music (title, filename, url, is_upload, created_at) VALUES (?, ?, ?, 1, ?)",
-                     (title, filename, f"/static/uploads/{filename}", datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        elif url:
-            c.execute("INSERT INTO music (title, url, is_upload, created_at) VALUES (?, ?, 0, ?)",
-                     (title, url, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        
-        conn.commit()
-        log_visitor("Admin added music")
-    except Exception as e:
-        print(f"Music add error: {e}")
-    finally:
-        conn.close()
-    
-    return redirect(url_for('admin_panel'))
-
-@app.route('/admin/music/delete/<int:id>', methods=['POST'])
-@admin_required
-def delete_music(id):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT filename, is_upload FROM music WHERE id=?", (id,))
-    result = c.fetchone()
-    
-    if result and result[1] == 1:
-        try:
-            os.remove(os.path.join(UPLOAD_FOLDER, result[0]))
-        except:
-            pass
-    
-    c.execute("DELETE FROM music WHERE id=?", (id,))
-    conn.commit()
-    conn.close()
-    return jsonify({"success": True})
 
 @app.route('/admin/social/add', methods=['POST'])
 @admin_required
